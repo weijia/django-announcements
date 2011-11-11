@@ -1,36 +1,32 @@
-from django.http import HttpResponseRedirect
-from django.views.generic import list_detail
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 
-from announcements.models import Announcement, current_announcements_for_request
-
-try:
-    set
-except NameError:
-    from sets import Set as set   # Python 2.3 fallback
+from announcements.models import Announcement
 
 
-def announcement_list(request):
-    """
-    A basic view that wraps ``django.views.list_detail.object_list`` and
-    uses ``current_announcements_for_request`` to get the current
-    announcements.
-    """
-    queryset = current_announcements_for_request(request)
-    return list_detail.object_list(request, **{
-        "queryset": queryset,
-        "allow_empty": True,
+def dismiss(request, pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    
+    announcement = get_object_or_404(Announcement, pk=pk)
+    
+    if announcement.dismissal_type == Announcement.DISMISSAL_SESSION:
+        excluded = request.session.get("excluded_announcements", set())
+        excluded.add(announcement.pk)
+        request.session["excluded_announcements"] = excluded
+        status = 200
+    elif announcement.dismissal_type == Announcement.DISMISSAL_PERMANENT and request.user.is_authenticated():
+        announcement.dismissals.create(user=request.user)
+        status = 200
+    else:
+        status = 409
+    
+    return HttpResponse(status=status)
+
+
+def detail(request, pk):
+    announcement = get_object_or_404(Announcement, pk=pk)
+    return TemplateResponse(request, "announcements/detail.html", {
+        "announcement": announcement
     })
-
-
-def announcement_hide(request, object_id):
-    """
-    Mark this announcement hidden in the session for the user.
-    """
-    announcement = get_object_or_404(Announcement, pk=object_id)
-    # TODO: perform some basic security checks here to ensure next is not bad
-    redirect_to = request.GET.get("next")
-    excluded_announcements = request.session.get("excluded_announcements", set())
-    excluded_announcements.add(announcement.pk)
-    request.session["excluded_announcements"] = excluded_announcements
-    return HttpResponseRedirect(redirect_to)
