@@ -24,7 +24,8 @@ ChangeLog
 Migrations
 ^^^^^^^^^^
 
-::
+Migration scripts to move prior installations to latest version::
+
     ALTER TABLE "announcements_announcement" ADD COLUMN "dismissal_type" int DEFAULT 2 NOT NULL;
     ALTER TABLE "announcements_announcement" ADD COLUMN "publish_start" timestamp with time zone NOT NULL;
     ALTER TABLE "announcements_announcement" ADD COLUMN "publish_end" timestamp with time zone;
