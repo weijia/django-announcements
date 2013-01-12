@@ -1,7 +1,6 @@
-import datetime
-
 from django import template
 from django.db.models import Q
+from django.utils import timezone
 
 from announcements.models import Announcement
 
@@ -24,9 +23,9 @@ class AnnouncementsNode(template.Node):
     def render(self, context):
         request = context["request"]
         qs = Announcement.objects.filter(
-            publish_start__lte=datetime.datetime.now()
+            publish_start__lte=timezone.now()
         ).filter(
-            Q(publish_end__isnull=True) | Q(publish_end__gt=datetime.datetime.now())
+            Q(publish_end__isnull=True) | Q(publish_end__gt=timezone.now())
         ).filter(
             site_wide=True
         )
