@@ -1,3 +1,5 @@
 include AUTHORS
+include LICENSE
+include README.md
 recursive-include docs *
-recursive-include announcements/templates/notification/announcement *
+recursive-include announcements/templates/ *
