@@ -14,9 +14,9 @@ class Announcement(models.Model):
     DISMISSAL_PERMANENT = 3
     
     DISMISSAL_CHOICES = [
-        (DISMISSAL_NO, "No Dismissals Allowed"),
-        (DISMISSAL_SESSION, "Session Only Dismissal"),
-        (DISMISSAL_PERMANENT, "Permanent Dismissal Allowed")
+        (DISMISSAL_NO, _("No Dismissals Allowed")),
+        (DISMISSAL_SESSION, _("Session Only Dismissal")),
+        (DISMISSAL_PERMANENT, _("Permanent Dismissal Allowed"))
     ]
     
     title = models.CharField(_("title"), max_length=50)
