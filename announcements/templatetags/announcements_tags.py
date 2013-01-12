@@ -16,7 +16,7 @@ class AnnouncementsNode(template.Node):
         bits = token.split_contents()
         if len(bits) != 3:
             raise template.TemplateSyntaxError
-        return cls(as_var = bits[2])
+        return cls(as_var=bits[2])
     
     def __init__(self, as_var):
         self.as_var = as_var
@@ -26,7 +26,7 @@ class AnnouncementsNode(template.Node):
         qs = Announcement.objects.filter(
             publish_start__lte=datetime.datetime.now()
         ).filter(
-            Q(publish_end__isnull=True)|Q(publish_end__gt=datetime.datetime.now())
+            Q(publish_end__isnull=True) | Q(publish_end__gt=datetime.datetime.now())
         ).filter(
             site_wide=True
         )
