@@ -10,6 +10,7 @@ ChangeLog
 - renamed dismiss url
 - switched to timezone.now
 - marked some choice field strings for translation
+- swapped view mixin override in favor of auth backend and permission checking
 
 0.2
 ---

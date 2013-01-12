@@ -2,13 +2,16 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
+from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
+from django.contrib.auth.decorators import permission_required
+
 from announcements import signals
 from announcements.forms import AnnouncementForm
-from announcements.mixins import ProtectedMixin
 from announcements.models import Announcement
 
 
@@ -36,7 +39,14 @@ def detail(request, pk):
     })
 
 
-class CreateAnnouncementView(CreateView, ProtectedMixin):
+class ProtectedView(View):
+    
+    @method_decorator(permission_required("announcements.can_manage"))
+    def dispatch(self, *args, **kwargs):
+        return super(ProtectedView, self).dispatch(*args, **kwargs)
+
+
+class CreateAnnouncementView(ProtectedView, CreateView):
     model = Announcement
     form_class = AnnouncementForm
     
@@ -55,7 +65,7 @@ class CreateAnnouncementView(CreateView, ProtectedMixin):
         return reverse("announcements_list")
 
 
-class UpdateAnnouncementView(UpdateView, ProtectedMixin):
+class UpdateAnnouncementView(ProtectedView, UpdateView):
     model = Announcement
     form_class = AnnouncementForm
     
@@ -72,7 +82,7 @@ class UpdateAnnouncementView(UpdateView, ProtectedMixin):
         return reverse("announcements_list")
 
 
-class DeleteAnnouncementView(DeleteView, ProtectedMixin):
+class DeleteAnnouncementView(ProtectedView, DeleteView):
     model = Announcement
     
     def form_valid(self, form):
@@ -88,7 +98,7 @@ class DeleteAnnouncementView(DeleteView, ProtectedMixin):
         return reverse("announcements_list")
 
 
-class AnnouncementListView(ListView, ProtectedMixin):
+class AnnouncementListView(ProtectedView, ListView):
     model = Announcement
     queryset = Announcement.objects.all().order_by("-creation_date")
     paginate_by = 50
