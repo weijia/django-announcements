@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.views.decorators.http import require_POST
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
@@ -11,10 +12,8 @@ from announcements.models import Announcement
 from announcements.signals import announcement_created, announcement_updated, announcement_deleted
 
 
+@require_POST
 def dismiss(request, pk):
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
-    
     announcement = get_object_or_404(Announcement, pk=pk)
     
     if announcement.dismissal_type == Announcement.DISMISSAL_SESSION:
