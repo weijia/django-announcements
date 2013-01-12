@@ -3,6 +3,14 @@
 ChangeLog
 =========
 
+1.0
+---
+
+- removed atom feed
+- renamed dismiss url
+- switched to timezone.now
+- marked some choice field strings for translation
+
 0.2
 ---
 
