@@ -15,18 +15,17 @@ from announcements.models import Announcement
 @require_POST
 def dismiss(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
-    
     if announcement.dismissal_type == Announcement.DISMISSAL_SESSION:
         excluded = request.session.get("excluded_announcements", set())
         excluded.add(announcement.pk)
         request.session["excluded_announcements"] = excluded
         status = 200
-    elif announcement.dismissal_type == Announcement.DISMISSAL_PERMANENT and request.user.is_authenticated():
+    elif announcement.dismissal_type == Announcement.DISMISSAL_PERMANENT and \
+         request.user.is_authenticated():
         announcement.dismissals.create(user=request.user)
         status = 200
     else:
         status = 409
-    
     return HttpResponse(status=status)
 
 
@@ -38,7 +37,6 @@ def detail(request, pk):
 
 
 class CreateAnnouncementView(CreateView, ProtectedMixin):
-    
     model = Announcement
     form_class = AnnouncementForm
     
@@ -46,7 +44,6 @@ class CreateAnnouncementView(CreateView, ProtectedMixin):
         self.object = form.save(commit=False)
         self.object.creator = self.request.user
         self.object.save()
-        
         signals.announcement_created.send(
             sender=self.object,
             announcement=self.object,
@@ -59,7 +56,6 @@ class CreateAnnouncementView(CreateView, ProtectedMixin):
 
 
 class UpdateAnnouncementView(UpdateView, ProtectedMixin):
-    
     model = Announcement
     form_class = AnnouncementForm
     
@@ -77,7 +73,6 @@ class UpdateAnnouncementView(UpdateView, ProtectedMixin):
 
 
 class DeleteAnnouncementView(DeleteView, ProtectedMixin):
-    
     model = Announcement
     
     def form_valid(self, form):
@@ -94,7 +89,6 @@ class DeleteAnnouncementView(DeleteView, ProtectedMixin):
 
 
 class AnnouncementListView(ListView, ProtectedMixin):
-    
     model = Announcement
     queryset = Announcement.objects.all().order_by("-creation_date")
     paginate_by = 50
