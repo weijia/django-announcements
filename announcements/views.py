@@ -6,10 +6,10 @@ from django.views.decorators.http import require_POST
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
+from announcements import signals
 from announcements.forms import AnnouncementForm
 from announcements.mixins import ProtectedMixin
 from announcements.models import Announcement
-from announcements.signals import announcement_created, announcement_updated, announcement_deleted
 
 
 @require_POST
@@ -47,7 +47,7 @@ class CreateAnnouncementView(CreateView, ProtectedMixin):
         self.object.creator = self.request.user
         self.object.save()
         
-        announcement_created.send(
+        signals.announcement_created.send(
             sender=self.object,
             announcement=self.object,
             request=self.request
@@ -65,7 +65,7 @@ class UpdateAnnouncementView(UpdateView, ProtectedMixin):
     
     def form_valid(self, form):
         response = super(UpdateAnnouncementView, self).form_valid(form)
-        announcement_updated.send(
+        signals.announcement_updated.send(
             sender=self.object,
             announcement=self.object,
             request=self.request
@@ -82,7 +82,7 @@ class DeleteAnnouncementView(DeleteView, ProtectedMixin):
     
     def form_valid(self, form):
         response = super(DeleteAnnouncementView, self).form_valid(form)
-        announcement_deleted.send(
+        signals.announcement_deleted.send(
             sender=self.object,
             announcement=self.object,
             request=self.request
