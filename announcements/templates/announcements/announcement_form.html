@@ -2,15 +2,16 @@
 
 {% load i18n %}
 {% load bootstrap_tags %}
+{% load url from future %}
 
 {% block body_class %}announcements{% endblock %}
 
 {% block body %}
     <h1>{% if announcement %}{% trans "Edit Announcement" %}{% else %}{% trans "Create Announcement" %}{% endif %}</h1>
     {% if announcement %}
-        {% url announcements_update pk=announcement.pk as post_url %}
+        {% url "announcements_update" pk=announcement.pk as post_url %}
     {% else %}
-        {% url announcements_create as post_url %}
+        {% url "announcements_create" as post_url %}
     {% endif %}
 
     <form action="{{ post_url }}" method="POST" class="form form-horizontal">

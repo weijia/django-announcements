@@ -3,6 +3,12 @@
 ChangeLog
 =========
 
+1.0.1
+-----
+
+- fixed included templates to be compatible with Django 1.5
+
+
 1.0
 ---
 
